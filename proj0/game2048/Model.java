@@ -107,13 +107,16 @@ public class Model extends Observable {
      *    and the trailing tile does not.
      * */
     public boolean tilt(Side side) {
-        boolean changed;
-        changed = false;
-
+        boolean changed=false;
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
-
+        board.setViewingPerspective(side);
+        for(int i=0;i<4;i++){
+            if(moveColume(board,i))
+                changed=true;
+        }
+        board.setViewingPerspective(side.NORTH);
         checkGameOver();
         if (changed) {
             setChanged();
@@ -124,6 +127,118 @@ public class Model extends Observable {
     /** Checks if the game is over and sets the gameOver variable
      *  appropriately.
      */
+    public boolean moveColume(Board b,int n){
+        boolean changed=false;
+        boolean hasMerge1=false,hasMerge2=false,hasMerge3=false;
+        if(board.tile(n,2)!=null) {
+            Tile t1=b.tile(n,3);
+            Tile t2=b.tile(n,2);
+            Tile t3=b.tile(n,1);
+            Tile t4=b.tile(n,0);
+            if(t1==null){
+                b.move(n,3,t2);
+                changed=true;
+            }else{
+                if(t2!=null){
+                    if(t1.value()==t2.value()){
+                        b.move(n,3,t2);
+                        changed=true;
+                        hasMerge1=true;
+                        score+=b.tile(n,3).value();
+                    }
+                }
+            }
+        }
+        if(board.tile(n,1)!=null) {
+            Tile t1=b.tile(n,3);
+            Tile t2=b.tile(n,2);
+            Tile t3=b.tile(n,1);
+            Tile t4=b.tile(n,0);
+            if (t1 == null) {
+                if (t2 == null) {
+                    b.move(n, 3, t3);
+                    changed = true;
+                } else {
+                    if (t2.value() == t3.value()) {
+                        if (!hasMerge2) {
+                            b.move(n, 2, t3);
+                            score += b.tile(n, 2).value();
+                            hasMerge2 = true;
+                            changed = true;
+                        }
+                    }
+                }
+            } else {
+                if (t2 == null) {
+                    if (t1.value() == t3.value()) {
+                        if (!hasMerge1) {
+                            b.move(n, 3, t3);
+                            score += b.tile(n, 3).value();
+                            hasMerge1 = true;
+                        } else {
+                            b.move(n, 2, t3);
+                        }
+                    } else {
+                        b.move(n, 2, t3);
+                    }
+                    changed = true;
+                }else{
+                    if(t2.value()==t3.value()){
+                        if(!hasMerge2){
+                            b.move(n,2,t3);
+                            score+=b.tile(n,2).value();
+                            hasMerge2=true;
+                        }
+                    }
+                }
+            }
+        }
+        if(board.tile(n,0)!=null){
+            Tile t1=b.tile(n,3);
+            Tile t2=b.tile(n,2);
+            Tile t3=b.tile(n,1);
+            Tile t4=b.tile(n,0);
+            if(t1==null && t2==null && t3==null){
+                b.move(n,3,t4);
+            }else if(t1!=null && t2==null && t3==null){
+                if(t1.value()==t4.value()){
+                    if(!hasMerge1){
+                        b.move(n,3,t4);
+                        score+=b.tile(n,3).value();
+                        hasMerge1=true;
+                    }else{
+                        b.move(n,2,t4);
+                    }
+                }else{
+                    b.move(n,2,t4);
+                }
+                changed=true;
+            }else if( t2!=null && t3==null){
+                if(t2.value()==t4.value() ){
+                    if(!hasMerge2){
+                        b.move(n,2,t4);
+                        score+=b.tile(n,2).value();
+                        hasMerge2=true;
+                    }else{
+                        b.move(n,1,t4);
+                    }
+                }else{
+                    b.move(n,1,t4);
+                }
+                changed=true;
+            }else{
+                if(t3.value()==t4.value() ){
+                    if(!hasMerge3){
+                        b.move(n,1,t4);
+                        score+=b.tile(n,1).value();
+                        hasMerge3=true;
+                        changed=true;
+                    }
+                }
+            }
+        }
+        return changed;
+    }
     private void checkGameOver() {
         gameOver = checkGameOver(board);
     }
