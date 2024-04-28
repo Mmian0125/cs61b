@@ -137,7 +137,10 @@ public class Model extends Observable {
      *  Empty spaces are stored as null.
      * */
     public static boolean emptySpaceExists(Board b) {
-        // TODO: Fill in this function.
+        for(int i=0;i<b.size();i++)
+            for(int j=0;j<b.size();j++)
+                if(b.tile(i,j)==null)
+                    return true;
         return false;
     }
 
@@ -147,7 +150,11 @@ public class Model extends Observable {
      * given a Tile object t, we get its value with t.value().
      */
     public static boolean maxTileExists(Board b) {
-        // TODO: Fill in this function.
+        for(int i=0;i<b.size();i++)
+            for(int j=0;j<b.size();j++)
+                if(b.tile(i,j)!=null)
+                    if(b.tile(i,j).value()==MAX_PIECE)
+                        return true;
         return false;
     }
 
@@ -158,7 +165,40 @@ public class Model extends Observable {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
-        // TODO: Fill in this function.
+        for(int i=0;i<b.size();i++)
+            for(int j=0;j<b.size();j++) {
+                if(b.tile(i,j)==null)  //tile不存在，返回真
+                    return true;
+                else{
+                    int k;
+                    k=i;
+                    while(--k>0 && b.tile(k,j)==null){  //north方向上判断是否存在相同的数字
+                        ;
+                    }
+                    if(k>0 && b.tile(k,j).value()==b.tile(i,j).value())
+                        return true;
+
+                    k=i;
+                    while(++k<b.size() && b.tile(k,j)==null){  //south方向上判断是否存在相同的数字
+                        ;
+                    }
+                    if (k < b.size() && b.tile(k, j).value() == b.tile(i, j).value())
+                        return true;
+
+                    k=j;
+                    while(--k>0 && b.tile(i,k)==null)  //west方向上判断是否存在相同的数字
+                        ;
+                    if (k>0 && b.tile(i, k).value() == b.tile(i, j).value())
+                        return true;
+
+                    k=j;
+                    while(++k<b.size() && b.tile(i, k) == null)  //east方向上判断是否存在相同的数字
+                        ;
+                    if (k < b.size() && b.tile(i, k).value() == b.tile(i, j).value())
+                        return true;
+
+                }
+            }
         return false;
     }
 
